@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17
+    container_name: fms_postgres
+    environment:
+      POSTGRES_USER: fms_user
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: fms_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  payables-service:
+    build:
+      context: ./payables-service
+    container_name: payables_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://fms_user:12345@db:5432/fms_db
+
+volumes:
+  postgres_data:
